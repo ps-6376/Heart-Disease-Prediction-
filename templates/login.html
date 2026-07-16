@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sign In</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      html,
+      body {
+        height: 100%;
+        height: 100dvh; /* dynamic viewport height — prevents mobile browser-chrome scroll */
+        width: 100%;
+        overflow: hidden; /* no page-level scroll ever */
+      }
+
+      body {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #eef2f7;
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      }
+
+      /* ─── Card ─────────────────────────────────────────── */
+      .card {
+        display: flex;
+        width: 100%;
+        height: 100%;
+        background: #fff;
+        overflow: hidden;
+      }
+
+      /* ─── Left image panel ──────────────────────────────── */
+      .panel-image {
+        flex: 0 0 45%;
+        background-image: url("{{ url_for('static', filename='images/login_bg1.avif') }}");
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-position: center;
+        opacity: 0.85;
+      }
+
+      /* ─── Right form panel ──────────────────────────────── */
+      .panel-form {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 3rem 4rem;
+      }
+
+      .form-inner {
+        width: 100%;
+        max-width: 380px;
+      }
+
+      .form-inner h1 {
+        font-size: 22px;
+        font-weight: 500;
+        text-align: center;
+        color: #1a1a2e;
+        margin-bottom: 2.25rem;
+      }
+
+      /* ─── Fields ────────────────────────────────────────── */
+      .field {
+        position: relative;
+        margin-bottom: 1.4rem;
+      }
+
+      .field input {
+        width: 100%;
+        border: none;
+        border-bottom: 1.5px solid #c8cdd6;
+        border-radius: 0;
+        padding: 10px 36px 10px 0;
+        font-size: 14px;
+        color: #333;
+        background: transparent;
+        outline: none;
+        transition: border-color 0.2s;
+      }
+
+      .field input::placeholder {
+        color: #aaa;
+      }
+
+      .field input:focus {
+        border-bottom-color: #4db8e8;
+      }
+
+      .field i {
+        position: absolute;
+        right: 4px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 17px;
+        color: #bbb;
+        pointer-events: none;
+      }
+
+      /* ─── Sign In button ────────────────────────────────── */
+      .btn-signin {
+        width: 100%;
+        padding: 12px;
+        background: #4db8e8;
+        border: none;
+        border-radius: 28px;
+        color: #fff;
+        font-size: 15px;
+        font-weight: 500;
+        letter-spacing: 0.3px;
+        cursor: pointer;
+        margin-bottom: 1.25rem;
+        transition:
+          background 0.2s,
+          transform 0.1s;
+      }
+
+      .btn-signin:hover {
+        background: #35a9df;
+      }
+      .btn-signin:active {
+        transform: scale(0.98);
+      }
+
+      /* ─── Divider ───────────────────────────────────────── */
+      .divider {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 1.25rem;
+        color: #ccc;
+        font-size: 12px;
+      }
+
+      .divider::before,
+      .divider::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: #e8eaed;
+      }
+
+      /* ─── Google button ─────────────────────────────────── */
+      .btn-google {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        padding: 11px;
+        background: #fff;
+        border: 1px solid #dadce0;
+        border-radius: 28px;
+        font-size: 14px;
+        color: #3c4043;
+        font-weight: 500;
+        cursor: pointer;
+        margin-bottom: 1.75rem;
+        transition:
+          background 0.2s,
+          box-shadow 0.2s;
+      }
+
+      .btn-google:hover {
+        background: #f8f9fa;
+        box-shadow: 0 1px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      /* ─── Sign-up link ──────────────────────────────────── */
+      .signup-link {
+        text-align: center;
+        font-size: 13px;
+        color: #888;
+      }
+
+      .signup-link a {
+        font-weight: 600;
+        color: #1a1a2e;
+        text-decoration: none;
+      }
+
+      .signup-link a:hover {
+        color: #4db8e8;
+      }
+
+      /* ════════════════════════════════════════════════════
+         RESPONSIVE STYLES
+         ════════════════════════════════════════════════════ */
+
+      /* ── Tablet: ≤ 900px ─────────────────────────────── */
+      @media (max-width: 900px) {
+        .panel-image {
+          flex: 0 0 38%;
+        }
+
+        .panel-form {
+          padding: 2.5rem 2.5rem;
+        }
+      }
+
+      /* ── Small tablet / large phone: ≤ 680px ───────────
+         Stack layout: image banner on top, form below      */
+      @media (max-width: 680px) {
+        .card {
+          flex-direction: column;
+          height: 100%;
+        }
+
+        .panel-image {
+          flex: none;
+          width: 100%;
+          height: 200px;
+          opacity: 0.9;
+        }
+
+        .panel-form {
+          flex: 1;
+          overflow-y: auto;
+          padding: 2rem 1.75rem 2rem;
+          justify-content: center;
+        }
+      }
+
+      /* ── Mobile: ≤ 420px ─────────────────────────────── */
+      @media (max-width: 420px) {
+        .panel-image {
+          height: 160px;
+        }
+
+        .panel-form {
+          padding: 2rem 1.25rem 2.5rem;
+        }
+
+        .form-inner h1 {
+          font-size: 19px;
+          margin-bottom: 1.75rem;
+        }
+
+        .btn-signin,
+        .btn-google {
+          font-size: 14px;
+          padding: 11px;
+        }
+      }
+
+      /* ── Very small screens: ≤ 320px ────────────────── */
+      @media (max-width: 320px) {
+        .panel-image {
+          height: 120px;
+        }
+
+        .panel-form {
+          padding: 1.5rem 1rem 2rem;
+        }
+
+        .form-inner h1 {
+          font-size: 17px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <!-- Left: decorative image panel -->
+      <div
+        class="panel-image"
+        role="img"
+        aria-label="Decorative background"
+      ></div>
+
+      <!-- Right: form panel -->
+      <form class="panel-form" method="POST">
+  
+        <div class="form-inner">
+          <h1>Sign In your account</h1>
+           <p>{{msgg}}</p>
+           <p>{{msg}}</p>
+
+          <div class="field">
+            <input
+              type="text"
+              placeholder="username"
+              autocomplete="username"
+              name="uname"
+            />
+            <i class="ti ti-mail" aria-hidden="true"></i>
+          </div>
+
+          <div class="field">
+            <input
+              type="password"
+              placeholder="Password"
+              autocomplete="current-password"
+              name="password"
+            />
+            <i class="ti ti-lock" aria-hidden="true"></i>
+          </div>
+
+          <button class="btn-signin" type="submit">Sign In</button>
+
+
+
+          <p class="signup-link">
+            Don't have an account? <a href="/templates/signup.html">Sign Up</a>
+          </p>
+        </div>
+      </form>
+    </div>
+  </body>
+</html>
+
+
+
+

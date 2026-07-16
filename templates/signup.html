@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sign Up</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      html,
+      body {
+        height: 100%;
+        width: 100%;
+      }
+
+      body {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #eef2f7;
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      }
+
+      /* ─── Card ─────────────────────────────────────────── */
+      .card {
+        display: flex;
+        width: 100%;
+        height: 100%;
+        background: #fff;
+        overflow: hidden;
+      }
+
+      /* ─── Left image panel ──────────────────────────────── */
+      .panel-image {
+        flex: 0 0 45%;
+        background-image: url("{{ url_for('static', filename='images/login_bg.webp') }}");
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-position: center;
+        opacity: 0.85;
+      }
+
+      /* ─── Right form panel ──────────────────────────────── */
+      .panel-form {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 3rem 4rem;
+      }
+
+      .form-inner {
+        width: 100%;
+        max-width: 380px;
+      }
+
+      .form-inner h1 {
+        font-size: 22px;
+        font-weight: 500;
+        text-align: center;
+        color: #1a1a2e;
+        margin-bottom: 2.25rem;
+      }
+
+      /* ─── Fields ────────────────────────────────────────── */
+      .field {
+        position: relative;
+        margin-bottom: 1.4rem;
+      }
+
+      .field input {
+        width: 100%;
+        border: none;
+        border-bottom: 1.5px solid #c8cdd6;
+        border-radius: 0;
+        padding: 10px 36px 10px 0;
+        font-size: 14px;
+        color: #333;
+        background: transparent;
+        outline: none;
+        transition: border-color 0.2s;
+      }
+
+      .field input::placeholder {
+        color: #aaa;
+      }
+
+      .field input:focus {
+        border-bottom-color: #4db8e8;
+      }
+
+      .field i {
+        position: absolute;
+        right: 4px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 17px;
+        color: #bbb;
+        pointer-events: none;
+      }
+
+      .btn-signin {
+        width: 100%;
+        padding: 12px;
+        background: #4db8e8;
+        border: none;
+        border-radius: 28px;
+        color: #fff;
+        font-size: 15px;
+        font-weight: 500;
+        letter-spacing: 0.3px;
+        cursor: pointer;
+        margin-bottom: 1.25rem;
+        transition:
+          background 0.2s,
+          transform 0.1s;
+      }
+
+      .btn-signin:hover {
+        background: #35a9df;
+      }
+
+      .btn-signin:active {
+        transform: scale(0.98);
+      }
+
+      /* ─── Sign-in link ──────────────────────────────────── */
+      .signup-link {
+        text-align: center;
+        font-size: 13px;
+        color: #888;
+      }
+
+      .signup-link a {
+        font-weight: 600;
+        color: #1a1a2e;
+        text-decoration: none;
+      }
+
+      .signup-link a:hover {
+        color: #4db8e8;
+      }
+
+      /* ── Tablet: ≤ 900px ─────────────────────────────── */
+      @media (max-width: 900px) {
+        .panel-image {
+          flex: 0 0 38%;
+        }
+
+        .panel-form {
+          padding: 2.5rem 2.5rem;
+        }
+      }
+
+      /* ── Small tablet / large phone: ≤ 680px ───────────
+         Stack layout: image on top, form below            */
+      @media (max-width: 680px) {
+        body {
+          align-items: flex-start; /* allow scroll if content overflows */
+        }
+
+        .card {
+          flex-direction: column;
+          height: auto;
+          min-height: 100%;
+        }
+
+        .panel-image {
+          flex: none;
+          width: 100%;
+          height: 220px; /* fixed decorative strip */
+          opacity: 0.9;
+        }
+
+        .panel-form {
+          flex: 1;
+          padding: 2.5rem 1.75rem 3rem;
+        }
+      }
+
+      /* ── Mobile: ≤ 420px ─────────────────────────────── */
+      @media (max-width: 420px) {
+        .panel-image {
+          height: 160px;
+        }
+
+        .panel-form {
+          padding: 2rem 1.25rem 2.5rem;
+        }
+
+        .form-inner h1 {
+          font-size: 19px;
+          margin-bottom: 1.75rem;
+        }
+
+        .btn-signin {
+          font-size: 14px;
+          padding: 11px;
+        }
+      }
+
+      /* ── Very small screens: ≤ 320px ────────────────── */
+      @media (max-width: 320px) {
+        .panel-image {
+          height: 120px;
+        }
+
+        .panel-form {
+          padding: 1.5rem 1rem 2rem;
+        }
+
+        .form-inner h1 {
+          font-size: 17px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <!-- Left: decorative image panel -->
+      <div
+        class="panel-image"
+        role="img"
+        aria-label="Decorative background"
+      ></div>
+
+      <!-- Right: form panel -->
+      <p> {{war}}</p>
+      <p> {{msg}}</p>
+      <form class="panel-form" method="POST">
+        <div class="form-inner" >
+          <h1>Sign Up your account</h1>
+
+          <div class="field">
+            <input
+              type="text"
+              placeholder="username"
+              autocomplete="username"
+              name="username"
+            />
+            <i class="ti ti-mail" aria-hidden="true"></i>
+          </div>
+
+          <div class="field">
+            <input
+              type="password"
+              placeholder="Password"
+              autocomplete="new-password"
+              name="password"
+            />
+            <i class="ti ti-lock" aria-hidden="true"></i>
+          </div>
+
+          <div class="field">
+            <input
+              type="password"
+              placeholder="Confirm Password"
+              autocomplete="new-password"
+              name="cnf_pass"
+            />
+            <i class="ti ti-lock" aria-hidden="true"></i>
+          </div>
+
+          <button class="btn-signin" type="submit">Sign Up</button>
+
+          <p class="signup-link">
+            Already have an account? <a href="login.html">Sign in</a>
+          </p>
+        </div>
+      </form>
+    </div>
+  </body>
+</html>

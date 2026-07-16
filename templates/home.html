@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Heart Disease Risk Assessment</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    /* ── Reset ── */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* ── Root / Theme ── */
+    :root {
+      --accent-purple: rgba(160, 100, 255, 0.9);
+      --accent-blue:   rgba(80, 160, 255, 0.9);
+      --accent-pink:   rgba(255, 80, 130, 0.2);
+      --glass-bg:      rgba(255, 255, 255, 0.06);
+      --glass-border:  rgba(255, 255, 255, 0.15);
+      --glass-hover:   rgba(255, 255, 255, 0.09);
+      --glass-focus:   rgba(255, 255, 255, 0.10);
+      --text-primary:  rgba(255, 255, 255, 0.95);
+      --text-muted:    rgba(255, 255, 255, 0.45);
+      --text-hint:     rgba(255, 255, 255, 0.28);
+      --label-color:   rgba(255, 255, 255, 0.50);
+      --section-color: rgba(180, 140, 255, 0.80);
+      --tag-bg:        rgba(180, 140, 255, 0.15);
+      --tag-color:     rgba(200, 170, 255, 0.80);
+      --tag-border:    rgba(180, 140, 255, 0.20);
+      --divider:       rgba(255, 255, 255, 0.08);
+      --error-border:  rgba(255, 100, 120, 0.60);
+      --error-shadow:  rgba(255, 80, 100, 0.12);
+      --success-grad:  linear-gradient(135deg, rgba(60,200,140,.85), rgba(30,160,100,.85));
+      --danger-grad:   linear-gradient(135deg, rgba(200,80,100,.8), rgba(180,60,80,.8));
+      --btn-grad:      linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+      --logo-grad:     linear-gradient(135deg, rgba(180,100,255,.8), rgba(80,160,255,.8));
+    }
+
+    /* ── Body / Page ── */
+    body {
+      min-height: 100vh;
+      display: flex;
+      font-family: 'Outfit', sans-serif;
+      background-color: black;
+      align-items: center;
+      justify-content: center;
+      padding: 2.5rem 1rem;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Mesh gradient overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: -50%;
+      width: 200%;
+      height: 200%;
+      background:
+        radial-gradient(ellipse 600px 400px at 20% 30%, rgba(120,80,220,.25) 0%, transparent 60%),
+        radial-gradient(ellipse 500px 350px at 80% 70%, rgba(60,180,220,.20) 0%, transparent 60%),
+        radial-gradient(ellipse 400px 300px at 50% 10%, rgba(220,80,140,.15) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── Ambient Orbs ── */
+    .orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(60px);
+      pointer-events: none;
+      z-index: 0;
+      animation: drift 8s ease-in-out infinite alternate;
+    }
+    .orb-1 { width: 320px; height: 320px; top: 8%;  left: 4%;  background: rgba(130,80,255,.30); animation-duration: 9s; }
+    .orb-2 { width: 260px; height: 260px; bottom: 12%; right: 6%; background: rgba(60,200,230,.25); animation-duration: 11s; animation-delay: -3s; }
+    .orb-3 { width: 210px; height: 210px; top: 48%; left: 48%; background: rgba(255,80,130,.20); animation-duration: 7s;  animation-delay: -5s; }
+
+    @keyframes drift {
+      from { transform: translate(0,    0)    scale(1);   }
+      to   { transform: translate(30px,-40px) scale(1.1); }
+    }
+
+    /* ── Glass Card ── */
+    .card {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 700px;
+      background: var(--glass-bg);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid var(--glass-border);
+      border-radius: 24px;
+      padding: 2.5rem 2.5rem 2rem;
+      box-shadow:
+        0 8px 32px rgba(0,0,0,.40),
+        inset 0 1px 0 rgba(255,255,255,.12);
+      animation: fadeUp .6s ease both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0);    }
+    }
+
+    /* ── Header ── */
+    .card-header { text-align: center; margin-bottom: 2rem; }
+
+    .logo {
+      width: 54px;
+      height: 54px;
+      border-radius: 14px;
+      background: var(--logo-grad);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1rem;
+      border: 1px solid rgba(255,255,255,.20);
+      box-shadow: 0 4px 16px rgba(150,100,255,.40);
+    }
+
+    .logo svg { width: 27px; height: 27px; fill: #fff; }
+
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      letter-spacing: -0.02em;
+      margin-bottom: 0.3rem;
+    }
+
+    .subtitle {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-weight: 300;
+      letter-spacing: 0.02em;
+    }
+
+    .tag {
+      display: inline-block;
+      font-size: 0.62rem;
+      font-weight: 500;
+      padding: 2px 8px;
+      border-radius: 20px;
+      background: var(--tag-bg);
+      color: var(--tag-color);
+      border: 1px solid var(--tag-border);
+      margin-left: 6px;
+      vertical-align: middle;
+      letter-spacing: 0.04em;
+    }
+
+    /* ── Section Labels ── */
+    .section-label {
+      font-size: 0.70rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--section-color);
+      margin: 1.6rem 0 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--divider);
+    }
+
+    /* ── Grid ── */
+    .grid   { display: grid; gap: 0.75rem; }
+    .grid-2 { grid-template-columns: 1fr 1fr; }
+    .grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+
+    /* ── Field ── */
+    .field { display: flex; flex-direction: column; gap: 5px; }
+
+    label {
+      font-size: 0.72rem;
+      font-weight: 500;
+      color: var(--label-color);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    label abbr {
+      text-decoration: none;
+      cursor: help;
+      border-bottom: 1px dotted rgba(255,255,255,.25);
+    }
+
+    .hint {
+      font-size: 0.67rem;
+      color: var(--text-hint);
+      margin-top: 1px;
+    }
+
+    /* ── Inputs & Selects ── */
+    input,
+    select {
+      width: 100%;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 10px;
+      padding: 0.62rem 0.9rem;
+      font-size: 0.9rem;
+      font-family: 'Outfit', sans-serif;
+      color: var(--text-primary);
+      outline: none;
+      transition: border-color .2s, background .2s, box-shadow .2s;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    input::placeholder { color: rgba(255,255,255,.20); font-size: 0.85rem; }
+
+    select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='rgba(255,255,255,0.4)' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 2.2rem;
+      cursor: pointer;
+    }
+
+    select option {
+      background: #24243e;
+      color: #fff;
+    }
+
+    input:hover,
+    select:hover {
+      border-color: rgba(255,255,255,.22);
+      background: var(--glass-hover);
+    }
+
+    input:focus,
+    select:focus {
+      border-color: rgba(170,120,255,.70);
+      background: var(--glass-focus);
+      box-shadow: 0 0 0 3px rgba(150,100,255,.15);
+    }
+
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button { opacity: 0.3; }
+
+    /* ── Button ── */
+    .btn-wrap { margin-top: 1.8rem; }
+
+    .btn {
+      width: 100%;
+      padding: 0.88rem;
+      border: none;
+      border-radius: 12px;
+      background: var(--btn-grad);
+      color: #fff;
+      font-size: 0.95rem;
+      font-weight: 500;
+      font-family: 'Outfit', sans-serif;
+      cursor: pointer;
+      letter-spacing: 0.02em;
+      position: relative;
+      overflow: hidden;
+      transition: transform .2s, box-shadow .2s, opacity .2s;
+      box-shadow: 0 4px 20px rgba(140,90,255,.35);
+    }
+
+    .btn::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,.15) 0%, transparent 60%);
+      opacity: 0;
+      transition: opacity .2s;
+    }
+
+    .btn:hover              { transform: translateY(-1px); box-shadow: 0 6px 24px rgba(140,90,255,.50); }
+    .btn:hover::before      { opacity: 1; }
+    .btn:active             { transform: translateY(0); }
+    .btn:disabled           { cursor: not-allowed; }
+
+    /* ── Divider ── */
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 1.4rem 0 1rem;
+    }
+    .divider-line { flex: 1; height: 1px; background: var(--divider); }
+    .divider-text { font-size: 0.70rem; color: rgba(255,255,255,.25); letter-spacing: 0.05em; white-space: nowrap; }
+
+    /* ── Footer ── */
+    .footer-note {
+      text-align: center;
+      font-size: 0.72rem;
+      color: rgba(255,255,255,.25);
+      line-height: 1.6;
+    }
+    .footer-note a { color: rgba(180,140,255,.70); text-decoration: none; }
+    .footer-note a:hover { color: rgba(200,165,255,.90); }
+
+    /* ── Responsive ── */
+    @media (max-width: 600px) {
+      .card    { padding: 1.75rem 1.25rem 1.5rem; border-radius: 18px; }
+      .grid-3  { grid-template-columns: 1fr 1fr; }
+      h1       { font-size: 1.25rem; }
+    }
+
+    @media (max-width: 400px) {
+      .card   { padding: 1.4rem 1rem 1.25rem; }
+      .grid-3 { grid-template-columns: 1fr; }
+      .grid-2 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Ambient orbs -->
+  <div class="orb orb-1" aria-hidden="true"></div>
+  <div class="orb orb-2" aria-hidden="true"></div>
+  <div class="orb orb-3" aria-hidden="true"></div>
+
+  <!-- Glass card -->
+  <main class="card">
+
+    <!-- Header -->
+    <header class="card-header">
+      <div class="logo" aria-hidden="true">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 21.593c-.5-.37-5.854-4.193-8.038-7.043C2.066 12.26 1.44 9.72 2.5 7.5
+                   3.534 5.33 5.57 4 8 4c1.734 0 3.2.738 4 2 .8-1.262 2.266-2 4-2
+                   2.43 0 4.466 1.33 5.5 3.5 1.06 2.22.434 4.76-1.462 7.05
+                   C17.854 17.4 12.5 21.223 12 21.593z"/>
+        </svg>
+      </div>
+      <h1>Heart Risk Assessment <span class="tag">ML Model</span></h1>
+      <p class="subtitle">Enter clinical parameters for prediction analysis</p>
+    </header>
+
+    <!-- Form -->
+    <form id="riskForm" method="POST" novalidate>
+
+      <!-- Demographics -->
+      <p class="section-label">Patient Demographics</p>
+      <div class="grid grid-2">
+        <div class="field">
+          <label for="age"><abbr title="Patient age in years">Age</abbr></label>
+          <input type="number" id="age" name="age" min="1" max="120" placeholder="e.g. 55"  required >
+          <span class="hint">Years (29–77)</span>
+        </div>
+        <div class="field" >
+          <label for="sex">Sex</label>
+          <select id="sex" name="sex" required>
+            <option value="" disabled selected>Select</option>
+            <option value="1">Male</option>
+            <option value="0">Female</option>
+          </select>
+          <span class="hint">Biological sex</span>
+        </div>
+      </div>
+
+      <!-- Cardiac Indicators -->
+      <p class="section-label">Cardiac Indicators</p>
+      <div class="grid grid-3">
+        <div class="field">
+          <label for="cp"><abbr title="Chest Pain Type">CP</abbr></label>
+          <select id="cp" name="cp" required>
+            <option value="" disabled selected>Type</option>
+            <option value="0">Typical Angina</option>
+            <option value="1">Atypical</option>
+            <option value="2">Non-anginal</option>
+            <option value="3">Asymptomatic</option>
+          </select>
+          <span class="hint">Chest pain type</span>
+        </div>
+        <div class="field">
+          <label for="trestbps"><abbr title="Resting Blood Pressure (mm Hg)">Trestbps</abbr></label>
+          <input type="number" id="trestbps" name="trestbps" min="50" max="250" placeholder="e.g. 120" required>
+          <span class="hint">mm Hg at rest</span>
+        </div>
+        <div class="field">
+          <label for="chol"><abbr title="Serum Cholesterol in mg/dl">Chol</abbr></label>
+          <input type="number" id="chol" name="chol" min="100" max="600" placeholder="e.g. 240" required>
+          <span class="hint">mg/dl serum</span>
+        </div>
+      </div>
+
+      <!-- Diagnostic Results -->
+      <p class="section-label">Diagnostic Results</p>
+      <div class="grid grid-3">
+        <div class="field">
+          <label for="fbs"><abbr title="Fasting Blood Sugar > 120 mg/dl">FBS</abbr></label>
+          <select id="fbs" name="fbs" required>
+            <option value="" disabled selected>Level</option>
+            <option value="1">High (&gt;120)</option>
+            <option value="0">Normal (≤120)</option>
+          </select>
+          <span class="hint">Fasting blood sugar</span>
+        </div>
+        <div class="field">
+          <label for="restecg"><abbr title="Resting ECG Results">Restecg</abbr></label>
+          <select id="restecg" name="restecg" required>
+            <option value="" disabled selected>Result</option>
+            <option value="0">Normal</option>
+            <option value="1">ST-T Abnormal</option>
+            <option value="2">LV Hypertrophy</option>
+          </select>
+          <span class="hint">ECG at rest</span>
+        </div>
+        <div class="field">
+          <label for="thalach"><abbr title="Maximum Heart Rate Achieved">Thalach</abbr></label>
+          <input type="number" id="thalach" name="thalach" min="50" max="250" placeholder="e.g. 150" required>
+          <span class="hint">Max heart rate (bpm)</span>
+        </div>
+      </div>
+
+      <!-- Exercise Test Data -->
+      <p class="section-label">Exercise Test Data</p>
+      <div class="grid grid-3">
+        <div class="field">
+          <label for="exang"><abbr title="Exercise Induced Angina">Exang</abbr></label>
+          <select id="exang" name="exang" required>
+            <option value="" disabled selected>Result</option>
+            <option value="1">Yes</option>
+            <option value="0">No</option>
+          </select>
+          <span class="hint">Exercise angina</span>
+        </div>
+        <div class="field">
+          <label for="oldpeak"><abbr title="ST Depression induced by exercise relative to rest">Oldpeak</abbr></label>
+          <input type="number" id="oldpeak" name="oldpeak" min="0" max="10" step="0.1" placeholder="e.g. 1.5" required>
+          <span class="hint">ST depression (0–6.2)</span>
+        </div>
+        <div class="field">
+          <label for="slope"><abbr title="Slope of peak exercise ST segment">Slope</abbr></label>
+          <select id="slope" name="slope" required>
+            <option value="" disabled selected>Slope</option>
+            <option value="0">Upsloping</option>
+            <option value="1">Flat</option>
+            <option value="2">Downsloping</option>
+          </select>
+          <span class="hint">ST peak slope</span>
+        </div>
+      </div>
+
+      <!-- Vessel & Thal -->
+      <p class="section-label">Vessel &amp; Thal</p>
+      <div class="grid grid-2">
+        <div class="field">
+          <label for="ca"><abbr title="Number of major vessels colored by fluoroscopy (0–3)">CA</abbr></label>
+          <select id="ca" name="ca" required>
+            <option value="" disabled selected>Count</option>
+            <option value="0">0 vessels</option>
+            <option value="1">1 vessel</option>
+            <option value="2">2 vessels</option>
+            <option value="3">3 vessels</option>
+          </select>
+          <span class="hint">Major vessels (0–3)</span>
+        </div>
+        <div class="field">
+          <label for="thal"><abbr title="Thalassemia type">Thal</abbr></label>
+          <select id="thal" name="thal" required>
+            <option value="" disabled selected>Type</option>
+            <option value="1">Normal</option>
+            <option value="2">Fixed Defect</option>
+            <option value="3">Reversible Defect</option>
+          </select>
+          <span class="hint">Thalassemia</span>
+        </div>
+      </div>
+
+      <!-- Submit -->
+      <div class="btn-wrap">
+        <button type="submit" class="btn" id="submitBtn">Run Prediction</button>
+      </div>
+
+    </form><!-- /form -->
+
+    <!-- Divider -->
+    <div class="divider">
+      <div class="divider-line"></div>
+      <span class="divider-text">Cleveland Heart Disease Dataset</span>
+      <div class="divider-line"></div>
+    </div>
+
+    <!-- Footer -->
+    <p class="footer-note">
+      For clinical decision support only &mdash; not a substitute for professional diagnosis.<br>
+      <a href="#">Privacy Policy</a> &middot; <a href="#">Documentation</a>
+    </p>
+
+  </main><!-- /card -->
+
+  
+</body>
+</html>
